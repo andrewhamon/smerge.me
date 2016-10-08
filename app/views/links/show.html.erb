@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Spotify user:</strong>
+  <%= @link.spotify_user_id %>
+</p>
+
+<p>
+  <strong>Github user:</strong>
+  <%= @link.github_user_id %>
+</p>
+
+<p>
+  <strong>Spotify playlist:</strong>
+  <%= @link.spotify_playlist_id %>
+</p>
+
+<p>
+  <strong>Github repo:</strong>
+  <%= @link.github_repo_id %>
+</p>
+
+<p>
+  <strong>Github file path:</strong>
+  <%= @link.github_file_path %>
+</p>
+
+<%= link_to 'Edit', edit_link_path(@link) %> |
+<%= link_to 'Back', links_path %>

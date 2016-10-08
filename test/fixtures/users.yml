@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  spotify_id: MyString
+  spotify_access_token: MyString
+  spotify_refresh_token: MyString
+  spotify_access_token_expires_at: 2016-10-06 18:44:23
+
+two:
+  spotify_id: MyString
+  spotify_access_token: MyString
+  spotify_refresh_token: MyString
+  spotify_access_token_expires_at: 2016-10-06 18:44:23

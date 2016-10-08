@@ -1,0 +1,49 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or any plugin's vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ *= require_tree .
+ *= require_self
+ */
+
+ a.login.spotify, a.login.spotify:visited {
+   font-family: Helvetica, Arial, sans-serif;
+   font-size: 14px;
+   font-weight: 600px;
+   line-height: 1.5;
+   display: inline-block;
+   padding: 8px 35px 6px;
+   border-radius: 10000px;
+   color: white;
+   background-color: #2ebd59;
+   text-decoration: none;
+ }
+
+ a.login.spotify:hover {
+   background-color: #1ed760;
+ }
+
+ a.login.github, a.login.github:visited {
+   font-family: Helvetica, Arial, sans-serif;
+   font-size: 14px;
+   font-weight: 600px;
+   line-height: 1.5;
+   display: inline-block;
+   padding: 8px 35px 6px;
+   border-radius: 10000px;
+   color: white;
+   background-color: #444444;
+   text-decoration: none;
+ }
+
+ a.login.github:hover {
+   background-color: #2b2b2b;
+ }
