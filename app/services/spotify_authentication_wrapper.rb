@@ -51,6 +51,7 @@ class SpotifyAuthenticationWrapper
   end
 
   def uri_from_path(path)
+    return URI(path) if path.start_with? "http"
     URI(File.join(BASE_URL, path))
   end
 

@@ -9,7 +9,15 @@ class Spotify
   end
 
   def playlists
-    get("/me/playlists").body["items"]
+    result = []
+    next_url = "/me/playlists?limit=50"
+
+    while next_url
+      res = get(next_url)
+      result.concat(res.body["items"])
+      next_url = res.body["next"]
+    end
+    result
   end
 
   def clean_tracks(tracks)
