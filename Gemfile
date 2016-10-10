@@ -18,7 +18,8 @@ gem "omniauth-oauth2", "~> 1.3.1"
 gem "omniauth-spotify"
 gem "omniauth-github"
 gem "octokit", "~> 4.0"
-gem 'faraday-http-cache'
+gem "faraday-http-cache"
+gem "faraday_middleware"
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 3.0"

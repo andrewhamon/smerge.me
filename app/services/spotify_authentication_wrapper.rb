@@ -9,26 +9,27 @@ class SpotifyAuthenticationWrapper
   def initialize(user:)
     @user = user
 
-    uri = URI(BASE_URL)
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-    @client = http
+    @client = Faraday.new do |builder|
+      builder.response :json
+      builder.use Faraday::HttpCache,
+                  serializer: Marshal,
+                  shared_cache: false,
+                  store: Rails.cache,
+                  logger: Rails.logger
+      builder.adapter Faraday.default_adapter
+    end
   end
 
-  def get(path, _should_retry = true)
-    req = Net::HTTP::Get.new(uri_from_path(path))
-    request_with_retry(req)
+  def get(path)
+    request_with_retry(uri_from_path(path), method: :get)
   end
 
   def put(path)
-    req = Net::HTTP::Put.new(uri_from_path(path))
-    request_with_retry(req)
+    request_with_retry(uri_from_path(path), method: :put)
   end
 
   def post(path)
-    req = Net::HTTP::Post.new(uri_from_path(path))
-    request_with_retry(req)
+    request_with_retry(uri_from_path(path), method: :post)
   end
 
   private
@@ -51,34 +52,33 @@ class SpotifyAuthenticationWrapper
   end
 
   def uri_from_path(path)
-    return URI(path) if path.start_with? "http"
-    URI(File.join(BASE_URL, path))
+    return path if path.start_with? "http"
+    File.join(BASE_URL, path)
   end
 
-  def request_with_retry(req, should_retry = true)
+  def request_with_retry(url, should_retry = true, method:)
     refresh_access_token if user.access_token_expires_at.past?
-    add_common_headers(req)
-    res = client.request(req)
+
+    res = client.public_send(method) do |req|
+      req.url url
+      add_common_headers(req)
+    end
+
     if unauthorized?(res) && should_retry
       refresh_access_token
-      request_with_retry(duplicate_request(req), false)
-    else
-      res
+      res = request_with_retry(url, false, method: method)
     end
+    res
   end
 
   def add_common_headers(req)
-    req.add_field "Authorization", "Bearer #{user.access_token}"
-    req.add_field "Content-Type", "application/json"
+    req.headers["Authorization"] = "Bearer #{user.access_token}"
+    req.headers["Content-Type"] = "application/json"
     req
   end
 
-  def duplicate_request(req)
-    req.class.new(req.uri)
-  end
-
   def unauthorized?(res)
-    res.code.to_i == 401
+    res.status == 401
   end
 
   def spotify_client_id

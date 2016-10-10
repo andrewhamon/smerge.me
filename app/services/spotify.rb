@@ -42,18 +42,15 @@ class Spotify
   private
 
   def get(path)
-    res = authenticator.get(path)
-    Spotify::Response.new(status: res.code, headers: res.to_hash, raw_body: res.body)
+    authenticator.get(path)
   end
 
   def put(path)
-    res = authenticator.put(path)
-    Spotify::Response.new(status: res.code, headers: res.to_hash, raw_body: res.body)
+    authenticator.put(path)
   end
 
   def post(path)
-    res = authenticator.post(path)
-    Spotify::Response.new(status: res.code, headers: res.to_hash, raw_body: res.body)
+    authenticator.post(path)
   end
 
   def id_from_uri(uri)
@@ -64,20 +61,5 @@ class Spotify
     ids = batch.map { |uri| id_from_uri(uri) }
     query = { ids: ids.join(",") }.to_query
     get("/tracks?#{query}").body["tracks"].compact.map { |track| track["uri"] }
-  end
-end
-
-class Spotify
-  class Response
-    attr_reader :status, :headers, :body, :raw_body
-
-    def initialize(status:, headers:, raw_body:)
-      @status = status
-      @headers = headers
-      @raw_body = raw_body
-      @body = JSON.parse(raw_body)
-    rescue JSON::ParserError
-      @body = nil
-    end
   end
 end
