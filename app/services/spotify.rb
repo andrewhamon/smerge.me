@@ -12,13 +12,23 @@ class Spotify
     get("/me/playlists").body["items"]
   end
 
-  def tracks
-    get("/me/playlists").body["items"]
+  def clean_tracks(tracks)
+    tracks.each_slice(50).map { |batch| clean_track_batch(batch) }.flatten
   end
 
   def replace_playlist(target_playlist_id, tracks:)
-    query = { uris: tracks.join(",") }.to_query
+    batch = tracks.shift(90)
+    query = { uris: batch.join(",") }.to_query
     put("/users/#{user_id}/playlists/#{target_playlist_id}/tracks?#{query}")
+
+    append_to_playlist(target_playlist_id, tracks: tracks)
+  end
+
+  def append_to_playlist(target_playlist_id, tracks:)
+    tracks.each_slice(90) do |batch|
+      query = { uris: batch.join(",") }.to_query
+      post("/users/#{user_id}/playlists/#{target_playlist_id}/tracks?#{query}")
+    end
   end
 
   private
@@ -31,6 +41,21 @@ class Spotify
   def put(path)
     res = authenticator.put(path)
     Spotify::Response.new(status: res.code, headers: res.to_hash, raw_body: res.body)
+  end
+
+  def post(path)
+    res = authenticator.post(path)
+    Spotify::Response.new(status: res.code, headers: res.to_hash, raw_body: res.body)
+  end
+
+  def id_from_uri(uri)
+    uri.split(":").last
+  end
+
+  def clean_track_batch(batch)
+    ids = batch.map { |uri| id_from_uri(uri) }
+    query = { ids: ids.join(",") }.to_query
+    get("/tracks?#{query}").body["tracks"].compact.map { |track| track["uri"] }
   end
 end
 

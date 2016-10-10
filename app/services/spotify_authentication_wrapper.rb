@@ -21,8 +21,13 @@ class SpotifyAuthenticationWrapper
     request_with_retry(req)
   end
 
-  def put(path, _should_retry = true)
+  def put(path)
     req = Net::HTTP::Put.new(uri_from_path(path))
+    request_with_retry(req)
+  end
+
+  def post(path)
+    req = Net::HTTP::Post.new(uri_from_path(path))
     request_with_retry(req)
   end
 
