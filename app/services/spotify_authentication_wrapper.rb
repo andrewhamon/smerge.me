@@ -42,13 +42,13 @@ class SpotifyAuthenticationWrapper
   end
 
   def request_new_access_token
-    req = Net::HTTP::Post.new(URI("https://accounts.spotify.com/api/token"))
-    req.basic_auth(spotify_client_id, spotify_client_secret)
-    req.add_field "Content-Type", "application/x-www-form-urlencoded; charset=utf-8"
-    req.body = URI.encode_www_form(grant_type: :refresh_token,
-                                   refresh_token: user.refresh_token)
-    res = client.request(req)
-    JSON.parse(res.body)
+    res = client.post do |req|
+        req.url "https://accounts.spotify.com/api/token"
+        req.headers["Content-Type"] = "application/x-www-form-urlencoded; charset=utf-8"
+        req.headers["Authorization"] = basic.encode_credentials(spotify_client_id, spotify_client_secret)
+        req.body = URI.encode_www_form(grant_type: :refresh_token, refresh_token: user.refresh_token)
+    end
+    res.body
   end
 
   def uri_from_path(path)
@@ -87,5 +87,9 @@ class SpotifyAuthenticationWrapper
 
   def spotify_client_secret
     SPOTIFY_CLIENT_SECRET
+  end
+
+  def basic
+    ActionController::HttpAuthentication::Basic
   end
 end
