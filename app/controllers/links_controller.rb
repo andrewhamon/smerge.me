@@ -71,8 +71,9 @@ class LinksController < ApplicationController
   end
 
   def fetch_repos
+    Octokit.auto_paginate = true
     client = Octokit::Client.new(access_token: current_github_user.access_token)
-    @repos = client.repositories.select { |r| r[:permissions][:admin] }
+    @repos = client.repositories(nil, per_page: 100).select { |r| r[:permissions][:admin] }
     @repos = @repos.map { |r| [r[:full_name], r[:id]] }
   end
 end
