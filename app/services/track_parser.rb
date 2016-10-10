@@ -4,18 +4,10 @@ class TrackParser
   end
 
   def call
-    @result ||= @data.each_line
-                     .map { |line| parse_line(line) }
-                     .compact.select { |track| track.start_with? "spotify:track:" }
+    @result ||= @data.scan(/spotify:track:\w+/)
   end
 
   def self.call(data:)
     new(data: data).call
-  end
-
-  private
-
-  def parse_line(line)
-    line.split.last
   end
 end
